@@ -137,13 +137,6 @@ public class AlarmProvider extends ContentProvider {
 
         int code = sUriMatcher.match(uri);
         switch(code) {
-            case CODE_ALARM:
-                if(insert(uri, values) != null) {
-                    updatedAlarm = 1;
-                } else {
-                    updatedAlarm = 0;
-                }
-                break;
             case CODE_ALARM_WITH_ID:
                 String id = uri.getLastPathSegment();
                 String mSelection = "_id=?";

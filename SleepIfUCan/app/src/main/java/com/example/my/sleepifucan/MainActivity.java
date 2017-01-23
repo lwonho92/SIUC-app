@@ -71,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements
         mAlarmAdapter = new AlarmAdapter(this, this);
 
         mRecyclerView.setAdapter(mAlarmAdapter);
+
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT) {
 
             @Override
@@ -96,23 +97,23 @@ public class MainActivity extends AppCompatActivity implements
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // Create a new intent to start an AddTaskActivity
-//                Intent addTaskIntent = new Intent(MainActivity.this, AddTaskActivity.class);
-//                startActivity(addTaskIntent);
-                Toast.makeText(view.getContext(), "Add Button Clicked.", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(view.getContext(), DetailActivity.class);
+                intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.INSERT_ID);
+                intent.setData(AlarmEntry.CONTENT_URI);
+                startActivity(intent);
             }
         });
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
 
-//        setAlarm(this, 10000);
+        setAlarm(this, 10000);
     }
 
     @Override
     public void detail(int id) {
         Intent intent = new Intent(this, DetailActivity.class);
+        intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.UPDATE_ID);
         Uri uri = AlarmEntry.buildAlarmUriWithId(id);
-
         intent.setData(uri);
         startActivity(intent);
     }
@@ -154,27 +155,11 @@ public class MainActivity extends AppCompatActivity implements
 
         switch(selectedItem) {
             case R.id.action_insert:
-                new AsyncTask<Void, Void, Void>() {
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        ContentValues contentValues = new ContentValues();
-                        contentValues.put(AlarmEntry.COLUMN_CLOCK, 7);
-                        contentValues.put(AlarmEntry.COLUMN_MINUTE, 17);
-                        contentValues.put(AlarmEntry.COLUMN_DAY, 1101101);
+                Intent intent = new Intent(this, DetailActivity.class);
+                intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.INSERT_ID);
+                intent.setData(AlarmEntry.CONTENT_URI);
+                startActivity(intent);
 
-                        contentValues.put(AlarmEntry.COLUMN_REPEAT, 0);
-                        contentValues.put(AlarmEntry.COLUMN_TYPE, 0);
-                        contentValues.put(AlarmEntry.COLUMN_PATH, "");
-                        contentValues.put(AlarmEntry.COLUMN_VOLUME, 0);
-
-                        contentValues.put(AlarmEntry.COLUMN_DESCRIPTION, "기상하세요");
-                        contentValues.put(AlarmEntry.COLUMN_SWITCH, 0);
-
-                        getContentResolver().insert(AlarmEntry.CONTENT_URI, contentValues);
-
-                        return null;
-                    }
-                }.execute();
                 return true;
             case R.id.action_delete:
                 new AsyncTask<Void, Void, Void>() {
@@ -192,27 +177,25 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    public void androidClicked(View view) {
-        Toast.makeText(this, "Android Clicked", Toast.LENGTH_SHORT).show();
-    }
-
     GregorianCalendar currentCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
 
     private void setAlarm(Context context, long second) {
         Log.d("MainActivity tag", "setAlarm()");
         AlarmManager alarmManager = (AlarmManager) getApplication().getSystemService(Context.ALARM_SERVICE);
-        alarmManager.setTimeZone("GMT+09:00");
+//        alarmManager.setTimeZone("GMT+09:00");
 
         GregorianCalendar gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
 
         int currentYY = currentCalendar.get(Calendar.YEAR);
         int currentMM = currentCalendar.get(Calendar.MONTH);
         int currentDD = currentCalendar.get(Calendar.DAY_OF_MONTH);
+        int currentHH = currentCalendar.get(Calendar.HOUR_OF_DAY);
+        int currentMT = currentCalendar.get(Calendar.MINUTE);
 
-        gregorianCalendar.set(currentYY, currentMM, currentDD, 20, 31, 00);
+        gregorianCalendar.set(currentYY, currentMM, currentDD, currentHH, currentMT + 1, 0);
 
         if(gregorianCalendar.getTimeInMillis() < currentCalendar.getTimeInMillis()){
-            gregorianCalendar.set(currentYY, currentMM, currentDD+1, 20, 31, 00);
+            gregorianCalendar.set(currentYY, currentMM, currentDD+1, currentHH, currentMT + 1, 10);
             Log.i("TAG",gregorianCalendar.getTimeInMillis()+":");
         }
 

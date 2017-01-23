@@ -17,9 +17,67 @@
         android:text="알람 방식" />
 
     <EditText
+        android:id="@+id/et_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:text="@string/default_time"
-        android:textSize="42sp"
+        android:textSize="88sp"
+        android:cursorVisible="false"
         android:onClick="showTimePickerDialog" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <ToggleButton
+            android:id="@+id/toggle_monday"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_sunday"
+            android:textOff="@string/toggle_sunday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_monday"
+            android:textOff="@string/toggle_monday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_tuesday"
+            android:textOff="@string/toggle_tuesday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_wednesday"
+            android:textOff="@string/toggle_wednesday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_thursday"
+            android:textOff="@string/toggle_thursday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_friday"
+            android:textOff="@string/toggle_friday"/>
+        <ToggleButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textOn="@string/toggle_saturday"
+            android:textOff="@string/toggle_saturday"/>
+    </LinearLayout>
+    <EditText
+        android:id="@+id/et_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="설명"
+        android:lines="1"/>
 </LinearLayout>

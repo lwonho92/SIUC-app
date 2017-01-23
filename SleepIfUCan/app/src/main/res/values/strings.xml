@@ -2,5 +2,15 @@
     <string name="app_name">Sleep If U Can</string>
 
     <string name="content_authority">com.example.my.sleepifucan;</string>
+
     <string name="default_time">00:00</string>
+
+    <string name="toggle_sunday">일</string>
+    <string name="toggle_monday">월</string>
+    <string name="toggle_tuesday">화</string>
+    <string name="toggle_wednesday">수</string>
+    <string name="toggle_thursday">목</string>
+    <string name="toggle_friday">금</string>
+    <string name="toggle_saturday">토</string>
+
 </resources>

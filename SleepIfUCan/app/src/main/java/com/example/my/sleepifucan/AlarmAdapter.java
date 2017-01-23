@@ -8,6 +8,7 @@ import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,16 +25,18 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
     private Cursor mCursor;
 
     class AlarmAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView mTimeTextView;
-        private final TextView mDesTextView;
-        private final TextView mDayTextView;
+        private final TextView mTimeTextView, mDesTextView, mDayTextView;
+        private final ImageView mCycleView, mSwitchView;
 
         public AlarmAdapterViewHolder(View itemView) {
             super(itemView);
 
             mTimeTextView = (TextView) itemView.findViewById(R.id.tv_alarm_time);
+            mCycleView = (ImageView) itemView.findViewById(R.id.im_cycle);
             mDesTextView = (TextView) itemView.findViewById(R.id.tv_alarm_description);
             mDayTextView = (TextView) itemView.findViewById(R.id.tv_alarm_day);
+            mSwitchView = (ImageView) itemView.findViewById(R.id.im_switch);
+            mSwitchView.setOnClickListener(this);
 
             itemView.setOnClickListener(this);
         }
@@ -41,10 +44,18 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
-            mCursor.moveToPosition(adapterPosition);
-            int id = mCursor.getInt(MainActivity.INDEX_ID);
 
-            mHandler.detail(id);
+            switch(view.getId()) {
+                case R.id.im_switch:
+                    Toast.makeText(mContext, "Android Clicked", Toast.LENGTH_SHORT).show();
+                    break;
+                default:
+                    mCursor.moveToPosition(adapterPosition);
+                    int id = mCursor.getInt(MainActivity.INDEX_ID);
+                    mHandler.detail(id);
+
+                    break;
+            }
         }
 
         public void bind(int index) {
@@ -58,16 +69,44 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
             String des = mCursor.getString(MainActivity.INDEX_DESCRIPTION);
             int mSwitch = mCursor.getInt(MainActivity.INDEX_SWITCH);
 
-            String tmp = String.format("%1$02d:%2$02d", clock, minute);
-
             itemView.setTag(_id);
+
+            String tmp = String.format("%1$02d:%2$02d", clock, minute);
             mTimeTextView.setText(tmp);
-            mDesTextView.setText(des);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(1101101, true), Html.FROM_HTML_MODE_LEGACY));
+                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(day, mSwitch==1), Html.FROM_HTML_MODE_LEGACY));
             } else {
-                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(1101101, true)));
+                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(day, mSwitch==1)));
+            }
+
+            if(repeat == 1)
+                mCycleView.setVisibility(View.VISIBLE);
+            else
+                mCycleView.setVisibility(View.GONE);
+
+            if(des.length() >= 10)
+                mDesTextView.setText(des.substring(0, 10) + " ...");
+            else
+                mDesTextView.setText(des);
+
+            if(mSwitch == 1) {
+                mTimeTextView.setAlpha(1.0f);
+                mDesTextView.setAlpha(1.0f);
+                mDayTextView.setAlpha(1.0f);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mCycleView.setImageAlpha(255);
+                    mSwitchView.setImageAlpha(255);
+                }
+            }
+            else {
+                mTimeTextView.setAlpha(0.5f);
+                mDesTextView.setAlpha(0.5f);
+                mDayTextView.setAlpha(0.5f);
+                if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                    mCycleView.setImageAlpha(128);
+                    mSwitchView.setImageAlpha(128);
+                }
             }
 
         }

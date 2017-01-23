@@ -2,9 +2,11 @@ package com.example.my.sleepifucan.utilities;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.EditText;
@@ -12,6 +14,7 @@ import android.widget.TimePicker;
 
 import com.example.my.sleepifucan.R;
 
+import java.lang.reflect.Method;
 import java.util.Calendar;
 
 /**
@@ -19,10 +22,10 @@ import java.util.Calendar;
  */
 
 public class TimePickerUtils extends DialogFragment implements TimePickerDialog.OnTimeSetListener {
-    EditText edText;
+    EditText mEditText;
 
-    public TimePickerUtils(EditText edText){
-        this.edText = edText;
+    public TimePickerUtils(EditText editText){
+        this.mEditText = editText;
     }
 
     @Override
@@ -30,7 +33,7 @@ public class TimePickerUtils extends DialogFragment implements TimePickerDialog.
         final Calendar c = Calendar.getInstance();
         int hour = c.get(Calendar.HOUR_OF_DAY);
         int minute = c.get(Calendar.MINUTE);
-        String text = edText.getText().toString();
+        String text = mEditText.getText().toString();
 
         if(text.equals(getResources().getString(R.string.default_time)))
             return new TimePickerDialog(getActivity(), this, hour, minute, DateFormat.is24HourFormat(getActivity()));
@@ -38,24 +41,16 @@ public class TimePickerUtils extends DialogFragment implements TimePickerDialog.
             return new TimePickerDialog(getActivity(), this, Integer.parseInt(text.substring(0, 2)), Integer.parseInt(text.substring(3, 5)), DateFormat.is24HourFormat(getActivity()));
     }
 
-
-
     @Override
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
         // Do something with the time chosen by the user
         Log.d("TimePicker", view.toString());
         String sHour, sMin;
-        if(minute<10){
-            sMin = "0"+minute;
-        }else{
-            sMin = String.valueOf(minute);
-        }
-        if(hourOfDay<10){
-            sHour = "0"+hourOfDay;
-        }else{
-            sHour = String.valueOf(hourOfDay);
-        }
-        setSelectedTime(edText, sHour, sMin);
+
+        sHour = String.format("%1$02d", hourOfDay);
+        sMin = String.format("%1$02d", minute);
+
+        setSelectedTime(mEditText, sHour, sMin);
     }
 
     public void setSelectedTime(EditText edText, String hourOfDay,String minute) {
