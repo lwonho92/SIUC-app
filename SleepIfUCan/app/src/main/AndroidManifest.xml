@@ -40,6 +40,15 @@
                 <action android:name="android.intent.action.BOOT_COMPLETED"/>
             </intent-filter>
         </receiver>
+
+        <activity
+            android:name=".CallResultActivity">
+            <intent-filter >
+                <action android:name="com.example.my.sleepifucan" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
     </application>
 
 </manifest>

@@ -1,6 +1,9 @@
 package com.example.my.sleepifucan;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -20,6 +23,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.TimeZone;
+
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 public class MainActivity extends AppCompatActivity implements
@@ -31,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mPosition = RecyclerView.NO_POSITION;
 
     private static final int LOADER_ID = 0;
+    private static final String INTENT_ACTION = "com.example.my.sleepifucan";
 
     public static final String[] DESIRED_COLUMNS = {
             AlarmEntry._ID,
@@ -96,6 +104,8 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+
+//        setAlarm(this, 10000);
     }
 
     @Override
@@ -184,5 +194,31 @@ public class MainActivity extends AppCompatActivity implements
 
     public void androidClicked(View view) {
         Toast.makeText(this, "Android Clicked", Toast.LENGTH_SHORT).show();
+    }
+
+    GregorianCalendar currentCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
+
+    private void setAlarm(Context context, long second) {
+        Log.d("MainActivity tag", "setAlarm()");
+        AlarmManager alarmManager = (AlarmManager) getApplication().getSystemService(Context.ALARM_SERVICE);
+        alarmManager.setTimeZone("GMT+09:00");
+
+        GregorianCalendar gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
+
+        int currentYY = currentCalendar.get(Calendar.YEAR);
+        int currentMM = currentCalendar.get(Calendar.MONTH);
+        int currentDD = currentCalendar.get(Calendar.DAY_OF_MONTH);
+
+        gregorianCalendar.set(currentYY, currentMM, currentDD, 20, 31, 00);
+
+        if(gregorianCalendar.getTimeInMillis() < currentCalendar.getTimeInMillis()){
+            gregorianCalendar.set(currentYY, currentMM, currentDD+1, 20, 31, 00);
+            Log.i("TAG",gregorianCalendar.getTimeInMillis()+":");
+        }
+
+        Intent intent = new Intent(MainActivity.this, CallResultActivity.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, gregorianCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }

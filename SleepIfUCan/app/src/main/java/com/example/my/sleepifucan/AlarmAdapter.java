@@ -2,6 +2,7 @@ package com.example.my.sleepifucan;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.view.LayoutInflater;
@@ -62,7 +63,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
             itemView.setTag(_id);
             mTimeTextView.setText(tmp);
             mDesTextView.setText(des);
-            mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(1101101, true)));
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(1101101, true), Html.FROM_HTML_MODE_LEGACY));
+            } else {
+                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(1101101, true)));
+            }
+
         }
     }
 
