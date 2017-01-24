@@ -177,31 +177,27 @@ public class MainActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
-    GregorianCalendar currentCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
+
 
     private void setAlarm(Context context, long second) {
         Log.d("MainActivity tag", "setAlarm()");
         AlarmManager alarmManager = (AlarmManager) getApplication().getSystemService(Context.ALARM_SERVICE);
-//        alarmManager.setTimeZone("GMT+09:00");
 
-        GregorianCalendar gregorianCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
+        GregorianCalendar currentCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
 
-        int currentYY = currentCalendar.get(Calendar.YEAR);
-        int currentMM = currentCalendar.get(Calendar.MONTH);
-        int currentDD = currentCalendar.get(Calendar.DAY_OF_MONTH);
-        int currentHH = currentCalendar.get(Calendar.HOUR_OF_DAY);
-        int currentMT = currentCalendar.get(Calendar.MINUTE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(Calendar.HOUR_OF_DAY, 20);
+        calendar.set(Calendar.MINUTE, 5);
+        calendar.set(Calendar.SECOND, 0);
 
-        gregorianCalendar.set(currentYY, currentMM, currentDD, currentHH, currentMT + 1, 0);
-
-        if(gregorianCalendar.getTimeInMillis() < currentCalendar.getTimeInMillis()){
-            gregorianCalendar.set(currentYY, currentMM, currentDD+1, currentHH, currentMT + 1, 10);
-            Log.i("TAG",gregorianCalendar.getTimeInMillis()+":");
+        if(calendar.getTimeInMillis() < System.currentTimeMillis()){
+            calendar.add(Calendar.DATE, 1);
         }
 
         Intent intent = new Intent(MainActivity.this, CallResultActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, gregorianCalendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
+        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }
