@@ -10,19 +10,13 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     android:orientation="vertical"
     tools:context="com.example.my.sleepifucan.DetailActivity">
-    <Switch
-        android:id="@+id/switchType"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="알람 방식" />
-
     <EditText
         android:id="@+id/et_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/default_time"
-        android:textSize="88sp"
+        android:textSize="@dimen/time_size_detail"
         android:cursorVisible="false"
         android:onClick="showTimePickerDialog" />
 
@@ -31,53 +25,98 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
         <ToggleButton
-            android:id="@+id/toggle_monday"
+            android:id="@+id/tb_sunday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_sunday"
             android:textOff="@string/toggle_sunday"/>
         <ToggleButton
+            android:id="@+id/tb_monday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_monday"
             android:textOff="@string/toggle_monday"/>
         <ToggleButton
+            android:id="@+id/tb_tuesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_tuesday"
             android:textOff="@string/toggle_tuesday"/>
         <ToggleButton
+            android:id="@+id/tb_wednesday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_wednesday"
             android:textOff="@string/toggle_wednesday"/>
         <ToggleButton
+            android:id="@+id/tb_thursday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_thursday"
             android:textOff="@string/toggle_thursday"/>
         <ToggleButton
+            android:id="@+id/tb_friday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_friday"
             android:textOff="@string/toggle_friday"/>
         <ToggleButton
+            android:id="@+id/tb_saturday"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:textSize="@dimen/default_size_detail"
             android:textOn="@string/toggle_saturday"
             android:textOff="@string/toggle_saturday"/>
     </LinearLayout>
+
+    <CheckBox
+        android:id="@+id/cb_repeat"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:text="매주 반복"
+        android:checked="true"
+        android:textSize="@dimen/default_size_detail" />
+
+    <Switch
+        android:id="@+id/sw_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="알람음 켬"
+        android:textSize="@dimen/default_size_detail" />
+
+    <EditText
+        android:id="@+id/tv_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="알람음"
+        android:textSize="@dimen/default_size_detail" />
+
+    <SeekBar
+        android:id="@+id/sb_volume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        />
+
     <EditText
         android:id="@+id/et_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textSize="@dimen/default_size_detail"
         android:hint="설명"
         android:lines="1"/>
 </LinearLayout>

@@ -2,7 +2,6 @@ package com.example.my.sleepifucan;
 
 import android.app.AlarmManager;
 import android.app.PendingIntent;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -23,10 +22,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.TimeZone;
-
+import com.example.my.sleepifucan.alarm.AlarmIntentService;
+import com.example.my.sleepifucan.alarm.InitReceiver;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 public class MainActivity extends AppCompatActivity implements
@@ -87,6 +84,12 @@ public class MainActivity extends AppCompatActivity implements
                 Uri uri = AlarmEntry.CONTENT_URI;
                 uri = uri.buildUpon().appendPath(stringId).build();
 
+                Intent intent = new Intent(MainActivity.this, AlarmIntentService.class);
+                intent.putExtra(AlarmIntentService.ALARM_ID, id);
+                intent.putExtra(AlarmIntentService.ALARM_MILLIS, 0L);
+                intent.setAction(AlarmIntentService.CANCEL_ACTION);
+                startService(intent);
+
                 getContentResolver().delete(uri, null, null);
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, MainActivity.this);
             }
@@ -98,21 +101,24 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(view.getContext(), DetailActivity.class);
-                intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.INSERT_ID);
+                intent.setAction(DetailActivity.INSERT_ACTION);
                 intent.setData(AlarmEntry.CONTENT_URI);
                 startActivity(intent);
             }
         });
 
-        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
+        if(!InitReceiver.isInit) {
+            Intent intent = new Intent("com.example.my.sleepifucan.alarm.INIT_RECEIVER");
+            this.sendBroadcast(intent);
+        }
 
-        setAlarm(this, 10000);
+        getSupportLoaderManager().initLoader(LOADER_ID, null, this);
     }
 
     @Override
     public void detail(int id) {
         Intent intent = new Intent(this, DetailActivity.class);
-        intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.UPDATE_ID);
+        intent.setAction(DetailActivity.UPDATE_ACTION);
         Uri uri = AlarmEntry.buildAlarmUriWithId(id);
         intent.setData(uri);
         startActivity(intent);
@@ -156,7 +162,7 @@ public class MainActivity extends AppCompatActivity implements
         switch(selectedItem) {
             case R.id.action_insert:
                 Intent intent = new Intent(this, DetailActivity.class);
-                intent.putExtra(DetailActivity.CODE_FLAG, DetailActivity.INSERT_ID);
+                intent.setAction(DetailActivity.INSERT_ACTION);
                 intent.setData(AlarmEntry.CONTENT_URI);
                 startActivity(intent);
 
@@ -175,29 +181,5 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-
-
-    private void setAlarm(Context context, long second) {
-        Log.d("MainActivity tag", "setAlarm()");
-        AlarmManager alarmManager = (AlarmManager) getApplication().getSystemService(Context.ALARM_SERVICE);
-
-        GregorianCalendar currentCalendar = new GregorianCalendar(TimeZone.getTimeZone("GMT+09:00"));
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(System.currentTimeMillis());
-        calendar.set(Calendar.HOUR_OF_DAY, 20);
-        calendar.set(Calendar.MINUTE, 5);
-        calendar.set(Calendar.SECOND, 0);
-
-        if(calendar.getTimeInMillis() < System.currentTimeMillis()){
-            calendar.add(Calendar.DATE, 1);
-        }
-
-        Intent intent = new Intent(MainActivity.this, CallResultActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-        alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), AlarmManager.INTERVAL_DAY, pendingIntent);
     }
 }

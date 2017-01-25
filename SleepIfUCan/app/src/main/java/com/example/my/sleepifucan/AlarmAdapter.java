@@ -1,26 +1,32 @@
 package com.example.my.sleepifucan;
 
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Build;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
-import com.example.my.sleepifucan.utilities.StringUtils;
+import com.example.my.sleepifucan.utilities.DateUtils;
+
+import java.util.Calendar;
 
 /**
  * Created by MY on 2017-01-18.
  */
 
 public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapterViewHolder>{
-    private final Context mContext;
+    private  final Context mContext;
     private final AlarmAdapterOnClickHandler mHandler;
     private Cursor mCursor;
 
@@ -44,14 +50,58 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
         @Override
         public void onClick(View view) {
             int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
+            int id = mCursor.getInt(MainActivity.INDEX_ID);
 
             switch(view.getId()) {
                 case R.id.im_switch:
-                    Toast.makeText(mContext, "Android Clicked", Toast.LENGTH_SHORT).show();
+                    Uri mUri = AlarmEntry.buildAlarmUriWithId((int)itemView.getTag());
+
+                    int hourOfDay = mCursor.getInt(MainActivity.INDEX_CLOCK);
+                    int minute = mCursor.getInt(MainActivity.INDEX_MINUTE);
+                    int mSwitch = mCursor.getInt(MainActivity.INDEX_SWITCH);
+                    mSwitch = 1 - mSwitch;
+                    ContentValues contentValues = new ContentValues();
+                    contentValues.put(AlarmEntry.COLUMN_SWITCH, mSwitch);
+                    mContext.getContentResolver().update(mUri, contentValues, null, null);
+
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                    calendar.set(Calendar.MINUTE, minute);
+                    calendar.set(Calendar.SECOND, 0);
+                    calendar.set(Calendar.MILLISECOND, 0);
+
+                    if(calendar.getTimeInMillis() < System.currentTimeMillis())
+                        calendar.add(Calendar.DATE, 1);
+
+                    Intent intent = new Intent(mContext, AlarmIntentService.class);
+                    intent.putExtra(AlarmIntentService.ALARM_ID, id);
+                    intent.putExtra(AlarmIntentService.ALARM_MILLIS, calendar.getTimeInMillis());
+
+                    if(mSwitch == 1) {
+                        mTimeTextView.setAlpha(1.0f);
+                        mDesTextView.setAlpha(1.0f);
+                        mDayTextView.setAlpha(1.0f);
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            mCycleView.setImageAlpha(255);
+                            mSwitchView.setImageAlpha(255);
+                        }
+                        intent.setAction(AlarmIntentService.RESERVE_ACTION);
+                    }
+                    else {
+                        mTimeTextView.setAlpha(0.5f);
+                        mDesTextView.setAlpha(0.5f);
+                        mDayTextView.setAlpha(0.5f);
+                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                            mCycleView.setImageAlpha(128);
+                            mSwitchView.setImageAlpha(128);
+                        }
+                        intent.setAction(AlarmIntentService.CANCEL_ACTION);
+                    }
+                    mContext.startService(intent);
                     break;
                 default:
-                    mCursor.moveToPosition(adapterPosition);
-                    int id = mCursor.getInt(MainActivity.INDEX_ID);
                     mHandler.detail(id);
 
                     break;
@@ -75,9 +125,9 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
             mTimeTextView.setText(tmp);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(day, mSwitch==1), Html.FROM_HTML_MODE_LEGACY));
+                mDayTextView.setText(Html.fromHtml(DateUtils.buildTextColor(day, mSwitch==1), Html.FROM_HTML_MODE_LEGACY));
             } else {
-                mDayTextView.setText(Html.fromHtml(StringUtils.buildTextColor(day, mSwitch==1)));
+                mDayTextView.setText(Html.fromHtml(DateUtils.buildTextColor(day, mSwitch==1)));
             }
 
             if(repeat == 1)

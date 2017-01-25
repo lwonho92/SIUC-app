@@ -2,6 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.my.sleepifucan">
 
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
@@ -19,7 +20,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".DetailActivity"
             android:label="Alarm&apos;s Setting"
@@ -30,25 +30,20 @@
         </activity>
 
         <provider
-            android:authorities="@string/content_authority"
             android:name=".data.AlarmProvider"
-            android:exported="false"
-            />
+            android:authorities="@string/content_authority"
+            android:exported="false" />
 
-        <receiver android:name=".BootReceiver">
+        <receiver android:name=".alarm.InitReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.example.my.sleepifucan.alarm.INIT_RECEIVER" />
             </intent-filter>
         </receiver>
 
-        <activity
-            android:name=".CallResultActivity">
-            <intent-filter >
-                <action android:name="com.example.my.sleepifucan" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
+        <service android:name=".alarm.AlarmIntentService" />
 
+        <activity android:name=".AlarmScreen"></activity>
     </application>
 
 </manifest>

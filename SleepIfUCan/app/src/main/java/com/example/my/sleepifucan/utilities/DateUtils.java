@@ -7,7 +7,7 @@ import java.util.List;
  * Created by MY on 2017-01-23.
  */
 
-public class StringUtils {
+public class DateUtils {
     public static String[] DAY_STRING = {"일 ", "월 ", "화 ", "수 ", "목 ", "금 ", "토"};
     public static String[] COLORS = {"#000000", "#00AA00", "#888888"}; // black, green, gray.
 
@@ -26,5 +26,16 @@ public class StringUtils {
         }
 
         return colorString;
+    }
+
+    public static boolean isSettedDay(int day, int cal) {
+        int remain = 0;
+
+        for(int i = 1; i <= cal; i++) {
+            remain = day % 10;
+            day /= 10;
+        }
+
+        return remain == 1;
     }
 }

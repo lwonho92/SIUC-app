@@ -13,4 +13,9 @@
     <dimen name="table_margin_main">16dp</dimen>
     <dimen name="description_margin_main">8dp</dimen>
     <dimen name="fab_margin">16dp</dimen>
+
+    <!--Text size in Detail Activity-->
+    <dimen name="time_size_detail">88sp</dimen>
+    <dimen name="seek_size_detail">44dp</dimen>
+    <dimen name="default_size_detail">32sp</dimen>
 </resources>
