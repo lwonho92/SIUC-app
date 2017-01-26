@@ -2,11 +2,8 @@ package com.example.my.sleepifucan.utilities;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentTransaction;
-import android.text.InputType;
 import android.text.format.DateFormat;
 import android.util.Log;
 import android.widget.EditText;
@@ -14,7 +11,6 @@ import android.widget.TimePicker;
 
 import com.example.my.sleepifucan.R;
 
-import java.lang.reflect.Method;
 import java.util.Calendar;
 
 /**

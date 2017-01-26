@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:allowBackup="true"
@@ -32,7 +33,7 @@
         <provider
             android:name=".data.AlarmProvider"
             android:authorities="@string/content_authority"
-            android:exported="false" />
+            android:exported="true" />
 
         <receiver android:name=".alarm.InitReceiver">
             <intent-filter>
@@ -43,7 +44,10 @@
 
         <service android:name=".alarm.AlarmIntentService" />
 
-        <activity android:name=".AlarmScreen"></activity>
+        <activity
+            android:name=".AlarmScreen"
+            android:launchMode="singleTop">
+        </activity>
     </application>
 
 </manifest>

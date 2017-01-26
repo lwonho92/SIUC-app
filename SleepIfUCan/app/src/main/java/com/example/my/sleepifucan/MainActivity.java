@@ -1,7 +1,6 @@
 package com.example.my.sleepifucan;
 
 import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -16,7 +15,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +23,8 @@ import android.widget.Toast;
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.alarm.InitReceiver;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+
+import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity implements
         AlarmAdapter.AlarmAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mPosition = RecyclerView.NO_POSITION;
 
     private static final int LOADER_ID = 0;
-    private static final String INTENT_ACTION = "com.example.my.sleepifucan";
+    private static final String INTENT_ACTION = "com.example.my.sleepifucan.alarm.INIT_RECEIVER";
 
     public static final String[] DESIRED_COLUMNS = {
             AlarmEntry._ID,
@@ -80,27 +80,23 @@ public class MainActivity extends AppCompatActivity implements
             public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
                 int id = (int) viewHolder.itemView.getTag();
 
-                String stringId = Integer.toString(id);
-                Uri uri = AlarmEntry.CONTENT_URI;
-                uri = uri.buildUpon().appendPath(stringId).build();
-
                 Intent intent = new Intent(MainActivity.this, AlarmIntentService.class);
                 intent.putExtra(AlarmIntentService.ALARM_ID, id);
                 intent.putExtra(AlarmIntentService.ALARM_MILLIS, 0L);
                 intent.setAction(AlarmIntentService.CANCEL_ACTION);
                 startService(intent);
 
+                Uri uri = AlarmEntry.buildAlarmUriWithId(id);
                 getContentResolver().delete(uri, null, null);
                 getSupportLoaderManager().restartLoader(LOADER_ID, null, MainActivity.this);
             }
         }).attachToRecyclerView(mRecyclerView);
 
         FloatingActionButton fabButton = (FloatingActionButton) findViewById(R.id.fab);
-
         fabButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(view.getContext(), DetailActivity.class);
+                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
                 intent.setAction(DetailActivity.INSERT_ACTION);
                 intent.setData(AlarmEntry.CONTENT_URI);
                 startActivity(intent);
@@ -108,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         if(!InitReceiver.isInit) {
-            Intent intent = new Intent("com.example.my.sleepifucan.alarm.INIT_RECEIVER");
+            Intent intent = new Intent(INTENT_ACTION);
             this.sendBroadcast(intent);
         }
 
@@ -168,15 +164,16 @@ public class MainActivity extends AppCompatActivity implements
 
                 return true;
             case R.id.action_delete:
-                new AsyncTask<Void, Void, Void>() {
+                /*new AsyncTask<Void, Void, Void>() {
 
                     @Override
                     protected Void doInBackground(Void... params) {
                         getContentResolver().delete(AlarmEntry.CONTENT_URI, null, null);
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
                         return null;
                     }
-                }.execute();
+                }.execute();*/
                 return true;
         }
 

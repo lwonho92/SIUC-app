@@ -9,12 +9,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.my.sleepifucan.AlarmScreen;
-import com.example.my.sleepifucan.data.AlarmContract;
-import com.example.my.sleepifucan.utilities.DateUtils;
+import com.example.my.sleepifucan.utilities.TimeUtils;
+import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 import java.util.Calendar;
 
@@ -34,41 +34,64 @@ public class AlarmIntentService extends IntentService {
         super("AlarmIntentService");
     }
 
+    private static final String TAG = "Service Log";
+
+    private static PowerManager.WakeLock mWakeLock;
+
     @Override
     protected void onHandleIntent(Intent intent) {
         AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 
-        String action = intent.getAction();
         int id = intent.getIntExtra(ALARM_ID, 0);
-        long millis = intent.getLongExtra(ALARM_MILLIS, 0);
-
-        Uri uri = AlarmContract.AlarmEntry.CONTENT_URI.buildUpon().appendPath(Integer.toString(id)).build();
-        Cursor mCursor = getContentResolver().query(uri, null, null, null, null);
-
-        if(mCursor == null || !mCursor.moveToNext())
-            return;
+        long millis = intent.getLongExtra(ALARM_MILLIS, 0L);
+        String action = intent.getAction();
 
         Calendar calendar = Calendar.getInstance();
 
-        int today = calendar.get(Calendar.DAY_OF_WEEK);
-        int days = mCursor.getInt(mCursor.getColumnIndex(AlarmContract.AlarmEntry.COLUMN_DAY));
-
         switch(action) {
             case ALARM_ACTION:
-                if(DateUtils.isSettedDay(days, today)) {
+                Uri uri = AlarmEntry.buildAlarmUriWithId(id);
+                Cursor mCursor = getContentResolver().query(uri, null, null, null, null);
+
+                if(mCursor == null || !mCursor.moveToNext()) {
+                    Log.e("Service", "return ;");
+                    return;
+                }
+
+                int today = calendar.get(Calendar.DAY_OF_WEEK);
+                int days = mCursor.getInt(mCursor.getColumnIndex(AlarmEntry.COLUMN_DAY));
+
+                if(TimeUtils.isSettedDay(days, today)) {
                     Intent screenIntent = new Intent(this, AlarmScreen.class);
                     Bundle bundle = new Bundle();
                     bundle.putSerializable(AlarmScreen.ALARM_ID, id);
-//                    TODO description test
-                    String des = mCursor.getString(mCursor.getColumnIndex(AlarmContract.AlarmEntry.COLUMN_DESCRIPTION));
+                    String des = mCursor.getString(mCursor.getColumnIndex(AlarmEntry.COLUMN_DESCRIPTION));
                     bundle.putSerializable(AlarmScreen.ALARM_DESCRIPTION, des);
 
                     screenIntent.putExtras(bundle);
+                    screenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     startActivity(screenIntent);
+//
+                    if (mWakeLock != null) {
+                        return;
+                    }
+                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |
+                                                        PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                                                        PowerManager.ON_AFTER_RELEASE, "hi");
+                    mWakeLock.acquire();
+
+                    if (mWakeLock != null) {
+                        mWakeLock.release();
+                        mWakeLock = null;
+                    }
+//
+
 //                    매주 반복 체크 안되어 있을시 이 곳에서 업데이트.
 //                    TODO 매주 반복 체크 관련 작업.
                 }
-                Log.d("IntentService", "Action alarm id: " + id );
+                mCursor.close();
+                Log.e(TAG, "Action : " + id );
             case RESERVE_ACTION:
                 calendar.setTimeInMillis(millis);
                 if(calendar.getTimeInMillis() < System.currentTimeMillis())
@@ -88,22 +111,19 @@ public class AlarmIntentService extends IntentService {
                 } else {
                     alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
                 }
-                Log.d("IntentService", "Reserve alarm id: " + id );
+                Log.e(TAG, "Reserve : " + id );
                 break;
             case CANCEL_ACTION:
                 Intent cancelIntent = new Intent(this, AlarmIntentService.class);
-                cancelIntent.putExtra(ALARM_ID, id);
-                cancelIntent.putExtra(ALARM_MILLIS, millis);
+                cancelIntent.setAction(ALARM_ACTION);
                 PendingIntent cancelPendingIntent = PendingIntent.getService(this, id, cancelIntent, PendingIntent.FLAG_NO_CREATE);
 
                 if(cancelPendingIntent != null) {
                     alarmManager.cancel(cancelPendingIntent);
                     cancelPendingIntent.cancel();
+                    Log.e(TAG, "Cancel : " + id );
                 }
-
                 break;
         }
-
-        mCursor.close();
     }
 }

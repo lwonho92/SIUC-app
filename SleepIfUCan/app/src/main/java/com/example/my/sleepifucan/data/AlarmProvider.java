@@ -1,6 +1,5 @@
 package com.example.my.sleepifucan.data;
 
-import android.annotation.TargetApi;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -22,6 +21,8 @@ public class AlarmProvider extends ContentProvider {
 
     public static final int CODE_ALARM = 100;
     public static final int CODE_ALARM_WITH_ID = 101;
+
+    private static final String TAG = "Provider Log";
 
     public static UriMatcher sUriMatcher = buildUriMatcher();
 
@@ -53,16 +54,15 @@ public class AlarmProvider extends ContentProvider {
                 break;
 
             case CODE_ALARM_WITH_ID:
-                String item = uri.getLastPathSegment();
+                String id = uri.getLastPathSegment();
                 String mSelection = AlarmEntry._ID + "=?";
-                String[] mSelectionArgs = new String[]{item};
+                String[] mSelectionArgs = new String[]{id};
 
                 retCursor = sqLiteDatabase.query(AlarmEntry.TABLE_NAME, projection, mSelection, mSelectionArgs, null, null, sortOrder);
 
-                Log.d("Provider log", "queried item : " + item);
+                Log.e(TAG, "query : " + id);
 
                 break;
-
             default:
                 throw new UnsupportedOperationException("No match Uri: " + uri);
         }
@@ -84,11 +84,10 @@ public class AlarmProvider extends ContentProvider {
                 long id = sqLiteDatabase.insert(AlarmEntry.TABLE_NAME, null, values);
                 if(id > 0) {
                     retUri = ContentUris.withAppendedId(AlarmEntry.CONTENT_URI, id);
-                    Log.d("Provider log", "inserted item : " + id);
+                    Log.e(TAG, "insert : " + id);
                 } else {
                     throw new android.database.SQLException("Failed to insert row into " + uri);
                 }
-                Log.d("SQLite Debug ", retUri.toString());
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -108,14 +107,12 @@ public class AlarmProvider extends ContentProvider {
         int code = sUriMatcher.match(uri);
         switch(code) {
             case CODE_ALARM_WITH_ID:
-//                String id = uri.getPathSegments().get(1);
                 String id = uri.getLastPathSegment();
                 String mSelection = "_id=?";
                 String[] mSelectionArgs = new String[]{id};
                 deletedAlarm = sqLiteDatabase.delete(AlarmEntry.TABLE_NAME, mSelection, mSelectionArgs);
-                Log.d("Provider log", "deleted item : " + id);
+                Log.e(TAG, "delete : " + id);
                 break;
-//            for db test with CODE_ALARM.
             case CODE_ALARM:
                 deletedAlarm = sqLiteDatabase.delete(AlarmEntry.TABLE_NAME, null, null);
                 break;
@@ -123,8 +120,9 @@ public class AlarmProvider extends ContentProvider {
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        if(deletedAlarm != 0)
+        if(deletedAlarm != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
+        }
 
         return deletedAlarm;
     }
@@ -142,14 +140,15 @@ public class AlarmProvider extends ContentProvider {
                 String mSelection = "_id=?";
                 String[] mSelectionArgs = new String[]{id};
                 updatedAlarm = sqLiteDatabase.update(AlarmEntry.TABLE_NAME, values, mSelection, mSelectionArgs);
-                Log.d("Provider log", "updated item : " + id);
+                Log.e(TAG, "update : " + id);
                 break;
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
 
-        if(updatedAlarm != 0)
+        if(updatedAlarm != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
+        }
 
         return updatedAlarm;
     }
@@ -157,12 +156,5 @@ public class AlarmProvider extends ContentProvider {
     @Override
     public String getType(Uri uri) {
         throw new RuntimeException("We are not implementing getType in Sunshine.");
-    }
-
-    @Override
-    @TargetApi(11)
-    public void shutdown() {
-        mAlarmDbHelper.close();
-        super.shutdown();
     }
 }

@@ -1,23 +1,19 @@
 package com.example.my.sleepifucan.alarm;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.os.Build;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
-import android.support.v4.content.CursorLoader;
-import android.support.v4.content.Loader;
-import android.util.Log;
 
-import com.example.my.sleepifucan.data.AlarmContract;
+import com.example.my.sleepifucan.MainActivity;
+import com.example.my.sleepifucan.utilities.TimeUtils;
+import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 import java.util.Calendar;
+
+
 
 /**
  * Created by MY on 2017-01-23.
@@ -36,26 +32,23 @@ public class InitReceiver extends BroadcastReceiver {
 
             @Override
             protected Void doInBackground(Void... params) {
-                Uri uri = AlarmContract.AlarmEntry.CONTENT_URI;
-                String mSelection = AlarmContract.AlarmEntry.COLUMN_SWITCH + "=?";
+                Uri uri = AlarmEntry.CONTENT_URI;
+                String mSelection = AlarmEntry.COLUMN_SWITCH + "=?";
                 String[] mSelectionArgs = new String[] {"1"};
 
                 Cursor mCursor = mContext.getContentResolver().query(uri, null, mSelection, mSelectionArgs, null);
-                AlarmManager alarmManager = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
 
                 if(mCursor == null)
                     return null;
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
+                Calendar calendar = TimeUtils.getSetCalendar(0, 0);
 
                 while(mCursor.moveToNext()) {
                     Intent intent = new Intent(mContext, AlarmIntentService.class);
                     intent.setAction(AlarmIntentService.RESERVE_ACTION);
-                    int id = mCursor.getInt(mCursor.getColumnIndex(AlarmContract.AlarmEntry._ID));
-                    int hourOfDay = mCursor.getInt(mCursor.getColumnIndex(AlarmContract.AlarmEntry.COLUMN_CLOCK));
-                    int minute = mCursor.getInt(mCursor.getColumnIndex(AlarmContract.AlarmEntry.COLUMN_MINUTE));
+                    int id = mCursor.getInt(MainActivity.INDEX_ID);
+                    int hourOfDay = mCursor.getInt(MainActivity.INDEX_CLOCK);
+                    int minute = mCursor.getInt(MainActivity.INDEX_MINUTE);
                     calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
                     calendar.set(Calendar.MINUTE, minute);
 
@@ -68,6 +61,7 @@ public class InitReceiver extends BroadcastReceiver {
                     mContext.startService(intent);
                 }
 
+                mCursor.close();
                 return null;
             }
         }.execute();

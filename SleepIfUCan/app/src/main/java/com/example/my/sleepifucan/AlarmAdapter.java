@@ -17,7 +17,7 @@ import android.widget.TextView;
 
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
-import com.example.my.sleepifucan.utilities.DateUtils;
+import com.example.my.sleepifucan.utilities.TimeUtils;
 
 import java.util.Calendar;
 
@@ -65,13 +65,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
                     contentValues.put(AlarmEntry.COLUMN_SWITCH, mSwitch);
                     mContext.getContentResolver().update(mUri, contentValues, null, null);
 
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.setTimeInMillis(System.currentTimeMillis());
-                    calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                    calendar.set(Calendar.MINUTE, minute);
-                    calendar.set(Calendar.SECOND, 0);
-                    calendar.set(Calendar.MILLISECOND, 0);
-
+                    Calendar calendar = TimeUtils.getSetCalendar(hourOfDay, minute);
                     if(calendar.getTimeInMillis() < System.currentTimeMillis())
                         calendar.add(Calendar.DATE, 1);
 
@@ -80,23 +74,11 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
                     intent.putExtra(AlarmIntentService.ALARM_MILLIS, calendar.getTimeInMillis());
 
                     if(mSwitch == 1) {
-                        mTimeTextView.setAlpha(1.0f);
-                        mDesTextView.setAlpha(1.0f);
-                        mDayTextView.setAlpha(1.0f);
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mCycleView.setImageAlpha(255);
-                            mSwitchView.setImageAlpha(255);
-                        }
+                        setViewAlpha(true);
                         intent.setAction(AlarmIntentService.RESERVE_ACTION);
                     }
                     else {
-                        mTimeTextView.setAlpha(0.5f);
-                        mDesTextView.setAlpha(0.5f);
-                        mDayTextView.setAlpha(0.5f);
-                        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-                            mCycleView.setImageAlpha(128);
-                            mSwitchView.setImageAlpha(128);
-                        }
+                        setViewAlpha(false);
                         intent.setAction(AlarmIntentService.CANCEL_ACTION);
                     }
                     mContext.startService(intent);
@@ -112,7 +94,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
             mCursor.moveToPosition(index);
 
             int _id = mCursor.getInt(MainActivity.INDEX_ID);
-            int clock = mCursor.getInt(MainActivity.INDEX_CLOCK);
+            int hourOfDay = mCursor.getInt(MainActivity.INDEX_CLOCK);
             int minute = mCursor.getInt(MainActivity.INDEX_MINUTE);
             int day = mCursor.getInt(MainActivity.INDEX_DAY);
             int repeat = mCursor.getInt(MainActivity.INDEX_REPEAT);
@@ -121,13 +103,13 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
 
             itemView.setTag(_id);
 
-            String tmp = String.format("%1$02d:%2$02d", clock, minute);
-            mTimeTextView.setText(tmp);
+            String formattedTime = TimeUtils.getFormattedTime(hourOfDay, minute);
+            mTimeTextView.setText(formattedTime);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                mDayTextView.setText(Html.fromHtml(DateUtils.buildTextColor(day, mSwitch==1), Html.FROM_HTML_MODE_LEGACY));
+                mDayTextView.setText(Html.fromHtml(TimeUtils.buildTextColor(day, mSwitch==1), Html.FROM_HTML_MODE_LEGACY));
             } else {
-                mDayTextView.setText(Html.fromHtml(DateUtils.buildTextColor(day, mSwitch==1)));
+                mDayTextView.setText(Html.fromHtml(TimeUtils.buildTextColor(day, mSwitch==1)));
             }
 
             if(repeat == 1)
@@ -141,6 +123,15 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
                 mDesTextView.setText(des);
 
             if(mSwitch == 1) {
+                setViewAlpha(true);
+            }
+            else {
+                setViewAlpha(false);
+            }
+        }
+
+        public void setViewAlpha(boolean mSwitch) {
+            if(mSwitch) {
                 mTimeTextView.setAlpha(1.0f);
                 mDesTextView.setAlpha(1.0f);
                 mDayTextView.setAlpha(1.0f);
@@ -148,8 +139,7 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
                     mCycleView.setImageAlpha(255);
                     mSwitchView.setImageAlpha(255);
                 }
-            }
-            else {
+            } else {
                 mTimeTextView.setAlpha(0.5f);
                 mDesTextView.setAlpha(0.5f);
                 mDayTextView.setAlpha(0.5f);
@@ -158,7 +148,6 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
                     mSwitchView.setImageAlpha(128);
                 }
             }
-
         }
     }
 

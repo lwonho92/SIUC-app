@@ -11,7 +11,6 @@ import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,6 +22,7 @@ import android.widget.ToggleButton;
 
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.example.my.sleepifucan.utilities.TimeUtils;
 import com.example.my.sleepifucan.utilities.TimePickerUtils;
 
 import java.lang.reflect.Method;
@@ -42,6 +42,17 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     EditText pathEditText;
     SeekBar volumeSeekBar;
     EditText desEditText;
+
+    public static final int INDEX_ID = 0;
+    public static final int INDEX_CLOCK = 1;
+    public static final int INDEX_MINUTE = 2;
+    public static final int INDEX_DAY = 3;
+    public static final int INDEX_REPEAT = 4;
+    public static final int INDEX_TYPE = 5;
+    public static final int INDEX_PATH = 6;
+    public static final int INDEX_VOLUME = 7;
+    public static final int INDEX_DESCRIPTION = 8;
+    public static final int INDEX_SWITCH = 9;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,17 +98,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             setTitle("Detail Alarm");
             getSupportLoaderManager().initLoader(LOADER_ID, null, this);
         }
-
-        /*toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    // The toggle is enabled
-                    buttonView.getId();
-                } else {
-                    // The toggle is disabled
-                }
-            }
-        });*/
     }
 
     @Override
@@ -116,25 +116,18 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
             return;
         data.moveToFirst();
 
-        int clock = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_CLOCK));
-        int minute = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_MINUTE));
-        String tmp = String.format("%1$02d:%2$02d", clock, minute);
-        timeEditText.setText(tmp);
-        int days = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_DAY));
+        String formattedTime = TimeUtils.getFormattedTime(data.getInt(INDEX_CLOCK), data.getInt(INDEX_MINUTE));
+        timeEditText.setText(formattedTime);
+        int days = data.getInt(INDEX_DAY);
         for(ToggleButton toggleButton : dayToggleButtons) {
             toggleButton.setChecked((days%10)==1);
             days /= 10;
         }
-        int repeat = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_REPEAT));
-        repeatCheckBox.setChecked(repeat == 1);
-        int type = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_TYPE));
-        typeSwitch.setChecked(type == 1);
-        String path = data.getString(data.getColumnIndex(AlarmEntry.COLUMN_PATH));
-        pathEditText.setText(path);
-        int volumn = data.getInt(data.getColumnIndex(AlarmEntry.COLUMN_VOLUME));
-        volumeSeekBar.setProgress(volumn);
-        String description = data.getString(data.getColumnIndex(AlarmEntry.COLUMN_DESCRIPTION));
-        desEditText.setText(description);
+        repeatCheckBox.setChecked(data.getInt(INDEX_REPEAT) == 1);
+        typeSwitch.setChecked(data.getInt(INDEX_TYPE) == 1);
+        pathEditText.setText(data.getString(INDEX_PATH));
+        volumeSeekBar.setProgress(data.getInt(INDEX_VOLUME));
+        desEditText.setText(data.getString(INDEX_DESCRIPTION));
     }
 
     @Override
@@ -150,9 +143,9 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         switch(selectedItem) {
             case R.id.action_apply:
                 ContentValues contentValues = new ContentValues();
-                String tmp = timeEditText.getText().toString();
-                int hourOfDay = Integer.parseInt(tmp.substring(0, 2));
-                int minute = Integer.parseInt(tmp.substring(3, 5));
+                String formattedTime = timeEditText.getText().toString();
+                int hourOfDay = Integer.parseInt(formattedTime.substring(0, 2));
+                int minute = Integer.parseInt(formattedTime.substring(3, 5));
                 contentValues.put(AlarmEntry.COLUMN_CLOCK, hourOfDay);
                 contentValues.put(AlarmEntry.COLUMN_MINUTE, minute);
                 int days = 0;
@@ -163,14 +156,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 }
                 contentValues.put(AlarmEntry.COLUMN_DAY, days);
 
-                if(repeatCheckBox.isChecked())
-                    contentValues.put(AlarmEntry.COLUMN_REPEAT, 1);
-                else
-                    contentValues.put(AlarmEntry.COLUMN_REPEAT, 0);
-                if(typeSwitch.isChecked())
-                    contentValues.put(AlarmEntry.COLUMN_TYPE, 1);
-                else
-                    contentValues.put(AlarmEntry.COLUMN_TYPE, 0);
+                contentValues.put(AlarmEntry.COLUMN_REPEAT, repeatCheckBox.isChecked() ? 1 : 0);
+                contentValues.put(AlarmEntry.COLUMN_TYPE, typeSwitch.isChecked() ? 1 : 0);
                 contentValues.put(AlarmEntry.COLUMN_PATH, pathEditText.getText().toString());
                 contentValues.put(AlarmEntry.COLUMN_VOLUME, volumeSeekBar.getProgress());
 
@@ -182,18 +169,12 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 if(action == DetailActivity.INSERT_ACTION) {
                     Uri insertedUri = getContentResolver().insert(mUri, contentValues);
                     id = Integer.parseInt(insertedUri.getLastPathSegment());
-                    Log.d("Detail log", Integer.toString(id));
                 } else if(action == DetailActivity.UPDATE_ACTION){
                     getContentResolver().update(mUri, contentValues, null, null);
                     id = Integer.parseInt(mUri.getLastPathSegment());
                 }
 
-                Calendar calendar = Calendar.getInstance();
-                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                calendar.set(Calendar.MINUTE, minute);
-                calendar.set(Calendar.SECOND, 0);
-                calendar.set(Calendar.MILLISECOND, 0);
-
+                Calendar calendar = TimeUtils.getSetCalendar(hourOfDay, minute);
                 if(calendar.getTimeInMillis() < System.currentTimeMillis())
                     calendar.add(Calendar.DATE, 1);
 

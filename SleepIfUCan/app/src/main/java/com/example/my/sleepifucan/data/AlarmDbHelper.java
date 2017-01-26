@@ -37,6 +37,7 @@ public class AlarmDbHelper extends SQLiteOpenHelper {
         db.execSQL(SQL_CREATE_WEATHER_TABLE);
     }
 
+//    DB Scheme 변경 시 MainActivity.class, DetailActivity.class의 COLUMN_INDEX 변경사항 확인 하여야함.
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXIST " + AlarmEntry.TABLE_NAME);

@@ -1,13 +1,12 @@
 package com.example.my.sleepifucan.utilities;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Calendar;
 
 /**
  * Created by MY on 2017-01-23.
  */
 
-public class DateUtils {
+public class TimeUtils {
     public static String[] DAY_STRING = {"일 ", "월 ", "화 ", "수 ", "목 ", "금 ", "토"};
     public static String[] COLORS = {"#000000", "#00AA00", "#888888"}; // black, green, gray.
 
@@ -37,5 +36,19 @@ public class DateUtils {
         }
 
         return remain == 1;
+    }
+
+    public static String getFormattedTime(int hourOfDay, int minute) {
+        return String.format("%1$02d:%2$02d", hourOfDay, minute);
+    }
+
+    public static Calendar getSetCalendar(int hourOfDay, int minute) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(Calendar.MINUTE, minute);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+
+        return calendar;
     }
 }
