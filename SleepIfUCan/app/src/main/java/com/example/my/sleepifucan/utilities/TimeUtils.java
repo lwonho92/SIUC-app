@@ -27,10 +27,10 @@ public class TimeUtils {
         return colorString;
     }
 
-    public static boolean isSettedDay(int day, int cal) {
+    public static boolean isSettedDay(int day, int calDay) {
         int remain = 0;
 
-        for(int i = 1; i <= cal; i++) {
+        for(int i = 1; i <= calDay; i++) {
             remain = day % 10;
             day /= 10;
         }
@@ -38,8 +38,9 @@ public class TimeUtils {
         return remain == 1;
     }
 
-    public static String getFormattedTime(int hourOfDay, int minute) {
-        return String.format("%1$02d:%2$02d", hourOfDay, minute);
+    public static int transOffDay(int day, int calDay) {
+        int tmp = (int) Math.pow(10, calDay - 1);
+        return day - tmp;
     }
 
     public static Calendar getSetCalendar(int hourOfDay, int minute) {
@@ -50,5 +51,9 @@ public class TimeUtils {
         calendar.set(Calendar.MILLISECOND, 0);
 
         return calendar;
+    }
+
+    public static String getFormattedTime(int hourOfDay, int minute) {
+        return String.format("%1$02d:%2$02d", hourOfDay, minute);
     }
 }

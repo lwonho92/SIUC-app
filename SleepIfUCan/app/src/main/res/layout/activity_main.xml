@@ -24,4 +24,14 @@
         android:layout_margin="@dimen/fab_margin"
         app:srcCompat="@android:drawable/ic_input_add"
         android:tint="@android:color/white"/>
+
+    <ImageView
+        android:id="@+id/iv_picture"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:padding="72dp"
+        android:src="@drawable/ic_add_to_photos_black_24dp"
+        android:onClick="onClick"
+        android:alpha="0.3" />
 </FrameLayout>

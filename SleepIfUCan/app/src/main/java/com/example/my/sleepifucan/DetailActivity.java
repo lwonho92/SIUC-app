@@ -3,8 +3,10 @@ package com.example.my.sleepifucan;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -14,10 +16,13 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.ToggleButton;
 
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
@@ -30,16 +35,19 @@ import java.util.Calendar;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 10;
-    public static final String INSERT_ACTION = "insert_detail";
+    public static final int PICK_FROM_FILE = 1234;
+    public static final String NEW_ACTION = "new_detail";
     public static final String UPDATE_ACTION = "update_detail";
     private Uri mUri;
+    private String sPath = "";
     private String action;
 
     EditText timeEditText;
     ToggleButton[] dayToggleButtons;
     CheckBox repeatCheckBox;
     Switch typeSwitch;
-    EditText pathEditText;
+    TextView pathTextView;
+    Button pathButton;
     SeekBar volumeSeekBar;
     EditText desEditText;
 
@@ -49,7 +57,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public static final int INDEX_DAY = 3;
     public static final int INDEX_REPEAT = 4;
     public static final int INDEX_TYPE = 5;
-    public static final int INDEX_PATH = 6;
+    public static final int INDEX_URI = 6;
     public static final int INDEX_VOLUME = 7;
     public static final int INDEX_DESCRIPTION = 8;
     public static final int INDEX_SWITCH = 9;
@@ -70,7 +78,30 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         dayToggleButtons[6] = (ToggleButton) findViewById(R.id.tb_saturday);
         repeatCheckBox = (CheckBox) findViewById(R.id.cb_repeat);
         typeSwitch = (Switch) findViewById(R.id.sw_type);
-        pathEditText = (EditText) findViewById(R.id.tv_path);
+        typeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    typeSwitch.setText("알람음");
+                } else {
+                    typeSwitch.setText("진동");
+                }
+            }
+        });
+        pathTextView = (TextView) findViewById(R.id.tv_path);
+        pathButton = (Button) findViewById(R.id.bt_path);
+        pathButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(RingtoneManager.ACTION_RINGTONE_PICKER);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TITLE, "Select ringtone for alarm:");
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_SILENT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_SHOW_DEFAULT, true);
+                intent.putExtra(RingtoneManager.EXTRA_RINGTONE_TYPE, RingtoneManager.TYPE_ALARM | RingtoneManager.TYPE_RINGTONE);
+
+                startActivityForResult(intent, PICK_FROM_FILE);
+            }
+        });
         volumeSeekBar = (SeekBar) findViewById(R.id.sb_volume);
         desEditText = (EditText) findViewById(R.id.et_description);
 
@@ -92,8 +123,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         action = intent.getAction();
         mUri = intent.getData();
 
-        if(action == INSERT_ACTION)
-            setTitle("Insert Alarm");
+        if(action == NEW_ACTION)
+            setTitle("New Alarm");
         else if(action == UPDATE_ACTION) {
             setTitle("Detail Alarm");
             getSupportLoaderManager().initLoader(LOADER_ID, null, this);
@@ -125,7 +156,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
         }
         repeatCheckBox.setChecked(data.getInt(INDEX_REPEAT) == 1);
         typeSwitch.setChecked(data.getInt(INDEX_TYPE) == 1);
-        pathEditText.setText(data.getString(INDEX_PATH));
+        sPath = data.getString(INDEX_URI);
+        pathTextView.setText(getFileName());
         volumeSeekBar.setProgress(data.getInt(INDEX_VOLUME));
         desEditText.setText(data.getString(INDEX_DESCRIPTION));
     }
@@ -158,7 +190,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 contentValues.put(AlarmEntry.COLUMN_REPEAT, repeatCheckBox.isChecked() ? 1 : 0);
                 contentValues.put(AlarmEntry.COLUMN_TYPE, typeSwitch.isChecked() ? 1 : 0);
-                contentValues.put(AlarmEntry.COLUMN_PATH, pathEditText.getText().toString());
+                contentValues.put(AlarmEntry.COLUMN_URI, sPath);
                 contentValues.put(AlarmEntry.COLUMN_VOLUME, volumeSeekBar.getProgress());
 
                 contentValues.put(AlarmEntry.COLUMN_DESCRIPTION, desEditText.getText().toString());
@@ -166,7 +198,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
 
                 int id = 0;
 
-                if(action == DetailActivity.INSERT_ACTION) {
+                if(action == DetailActivity.NEW_ACTION) {
                     Uri insertedUri = getContentResolver().insert(mUri, contentValues);
                     id = Integer.parseInt(insertedUri.getLastPathSegment());
                 } else if(action == DetailActivity.UPDATE_ACTION){
@@ -200,5 +232,36 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     public void showTimePickerDialog(View v) {
         DialogFragment dialogFragment = new TimePickerUtils((EditText) v);
         dialogFragment.show(getSupportFragmentManager(), "TimePicker");
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if((requestCode == PICK_FROM_FILE) && (resultCode == RESULT_OK)){
+            if (data != null) {
+                Uri uri = data.getParcelableExtra(RingtoneManager.EXTRA_RINGTONE_PICKED_URI);
+                if (uri != null) {
+                    sPath = uri.toString();
+                    pathTextView.setText(getFileName());
+                }
+            }
+        }
+    }
+
+    public String getFileName() {
+        Uri uri = Uri.parse(sPath);
+        Cursor cursor = getContentResolver().query(uri, null, null, null, null);
+        String fileName = "기본 알람음";
+
+        if(cursor == null) {
+            return fileName;
+        }
+        if (cursor.moveToNext()) {
+            int index = cursor.getColumnIndex(MediaStore.Audio.Media.TITLE);
+            if(index > 0)
+                fileName = cursor.getString(index);
+        }
+        return fileName;
     }
 }

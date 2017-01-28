@@ -24,7 +24,7 @@ public class AlarmContract {
 
         public static final String COLUMN_REPEAT = "repeat";
         public static final String COLUMN_TYPE = "type";
-        public static final String COLUMN_PATH = "path";
+        public static final String COLUMN_URI = "path";
         public static final String COLUMN_VOLUME = "volume";
 
         public static final String COLUMN_DESCRIPTION = "description";

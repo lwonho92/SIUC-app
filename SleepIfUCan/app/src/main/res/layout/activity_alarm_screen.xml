@@ -8,27 +8,47 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:background="@color/colorPrimaryDark"
     tools:context="com.example.my.sleepifucan.AlarmScreen">
     <TextView
-        android:id="@+id/tv_screen"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:text="알람"
+        android:textSize="36sp"
+        android:textColor="#CCCCCC"
+        />
+
     <TextView
         android:id="@+id/tv_currentTime"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
+        android:layout_above="@+id/tv_description_screen"
+        android:gravity="center_horizontal"
         android:textSize="44sp"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold|italic" />
+
+    <TextView
+        android:id="@id/tv_description_screen"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="32dp"
+        android:gravity="center"
+        android:textSize="44sp"
+        android:textColor="#FFFFFF"
         android:textStyle="bold" />
+
     <Button
         android:id="@+id/bt_alarmOff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="32dp"
+        android:layout_margin="32dp"
         android:padding="32dp"
         android:text="Alarm Off"
         android:textSize="32sp"
-        android:textStyle="bold"
+        android:textColor="#FFFFFF"
         android:onClick="clickedAlarmOff" />
 </RelativeLayout>

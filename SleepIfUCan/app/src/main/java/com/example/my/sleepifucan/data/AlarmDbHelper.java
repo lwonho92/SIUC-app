@@ -29,7 +29,7 @@ public class AlarmDbHelper extends SQLiteOpenHelper {
 
                 AlarmEntry.COLUMN_REPEAT + " INTEGER NOT NULL, " +
                 AlarmEntry.COLUMN_TYPE + " INTEGER NOT NULL, " +
-                AlarmEntry.COLUMN_PATH + " TEXT NOT NULL, " +
+                AlarmEntry.COLUMN_URI + " TEXT NOT NULL, " +
                 AlarmEntry.COLUMN_VOLUME + " INTEGER NOT NULL, " +
 
                 AlarmEntry.COLUMN_DESCRIPTION + " TEXT, " +

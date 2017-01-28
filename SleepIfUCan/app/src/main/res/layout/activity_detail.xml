@@ -95,20 +95,28 @@
         android:id="@+id/sw_type"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="알람음 켬"
+        android:text="알람음"
+        android:checked="true"
         android:textSize="@dimen/default_size_detail" />
 
-    <EditText
+    <TextView
         android:id="@+id/tv_path"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="알람음"
+        android:text="기본 알람음"
+        />
+    <Button
+        android:id="@+id/bt_path"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="알람음 선택"
         android:textSize="@dimen/default_size_detail" />
 
     <SeekBar
         android:id="@+id/sb_volume"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:progress="50"
         android:max="100"
         />
 
@@ -116,7 +124,11 @@
         android:id="@+id/et_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="32dp"
+        android:lines="2"
+        android:maxLength="30"
         android:textSize="@dimen/default_size_detail"
         android:hint="설명"
-        android:lines="1"/>
+        android:scrollHorizontally="false"
+        />
 </LinearLayout>

@@ -3,6 +3,7 @@ package com.example.my.sleepifucan.alarm;
 import android.app.AlarmManager;
 import android.app.IntentService;
 import android.app.PendingIntent;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
@@ -64,31 +65,41 @@ public class AlarmIntentService extends IntentService {
                 if(TimeUtils.isSettedDay(days, today)) {
                     Intent screenIntent = new Intent(this, AlarmScreen.class);
                     Bundle bundle = new Bundle();
-                    bundle.putSerializable(AlarmScreen.ALARM_ID, id);
+//                    bundle.putSerializable(AlarmScreen.ALARM_ID, id);
                     String des = mCursor.getString(mCursor.getColumnIndex(AlarmEntry.COLUMN_DESCRIPTION));
                     bundle.putSerializable(AlarmScreen.ALARM_DESCRIPTION, des);
+                    int volume = mCursor.getInt(mCursor.getColumnIndex(AlarmEntry.COLUMN_VOLUME));
+                    bundle.putSerializable(AlarmScreen.ALARM_VOLUME, volume);
+                    int type = mCursor.getInt(mCursor.getColumnIndex(AlarmEntry.COLUMN_TYPE));
+                    bundle.putSerializable(AlarmScreen.ALARM_TYPE, type);
+
+                    String path = mCursor.getString(mCursor.getColumnIndex(AlarmEntry.COLUMN_URI));
 
                     screenIntent.putExtras(bundle);
+                    screenIntent.setData(Uri.parse(path));
                     screenIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    startActivity(screenIntent);
-//
+
                     if (mWakeLock != null) {
                         return;
                     }
                     PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                     mWakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK |
-                                                        PowerManager.ACQUIRE_CAUSES_WAKEUP |
-                                                        PowerManager.ON_AFTER_RELEASE, "hi");
+                            PowerManager.ACQUIRE_CAUSES_WAKEUP |
+                            PowerManager.ON_AFTER_RELEASE, "PowerManager");
                     mWakeLock.acquire();
 
                     if (mWakeLock != null) {
                         mWakeLock.release();
                         mWakeLock = null;
                     }
-//
 
-//                    매주 반복 체크 안되어 있을시 이 곳에서 업데이트.
-//                    TODO 매주 반복 체크 관련 작업.
+                    startActivity(screenIntent);
+
+                    if(mCursor.getInt(mCursor.getColumnIndex(AlarmEntry.COLUMN_REPEAT)) == 0) {
+                        ContentValues contentValues = new ContentValues();
+                        contentValues.put(AlarmEntry.COLUMN_DAY, TimeUtils.transOffDay(days, today));
+                        getContentResolver().update(uri, contentValues, null, null);
+                    }
                 }
                 mCursor.close();
                 Log.e(TAG, "Action : " + id );

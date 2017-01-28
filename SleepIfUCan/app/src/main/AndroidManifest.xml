@@ -4,7 +4,9 @@
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
     <application
         android:allowBackup="true"
@@ -29,6 +31,10 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+        <activity
+            android:name=".AlarmScreen"
+            android:launchMode="singleTop">
+        </activity>
 
         <provider
             android:name=".data.AlarmProvider"
@@ -43,11 +49,6 @@
         </receiver>
 
         <service android:name=".alarm.AlarmIntentService" />
-
-        <activity
-            android:name=".AlarmScreen"
-            android:launchMode="singleTop">
-        </activity>
     </application>
 
 </manifest>

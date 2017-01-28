@@ -1,11 +1,8 @@
 package com.example.my.sleepifucan;
 
-import android.app.AlarmManager;
-import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -18,19 +15,19 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+import android.widget.ImageView;
 
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.alarm.InitReceiver;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
-import java.util.Calendar;
-
 public class MainActivity extends AppCompatActivity implements
-        AlarmAdapter.AlarmAdapterOnClickHandler, LoaderManager.LoaderCallbacks<Cursor> {
+        AlarmAdapter.AlarmAdapterOnClickHandler,
+        LoaderManager.LoaderCallbacks<Cursor>,
+View.OnClickListener {
     private RecyclerView mRecyclerView;
     private AlarmAdapter mAlarmAdapter;
-    private Toast mToast;
+    private ImageView mPictureImageView;
 
     private int mPosition = RecyclerView.NO_POSITION;
 
@@ -61,8 +58,9 @@ public class MainActivity extends AppCompatActivity implements
         setContentView(R.layout.activity_main);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_alarm);
+        mPictureImageView = (ImageView) findViewById(R.id.iv_picture);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAlarmAdapter = new AlarmAdapter(this, this);
@@ -93,15 +91,7 @@ public class MainActivity extends AppCompatActivity implements
         }).attachToRecyclerView(mRecyclerView);
 
         FloatingActionButton fabButton = (FloatingActionButton) findViewById(R.id.fab);
-        fabButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(MainActivity.this, DetailActivity.class);
-                intent.setAction(DetailActivity.INSERT_ACTION);
-                intent.setData(AlarmEntry.CONTENT_URI);
-                startActivity(intent);
-            }
-        });
+        fabButton.setOnClickListener(this);
 
         if(!InitReceiver.isInit) {
             Intent intent = new Intent(INTENT_ACTION);
@@ -138,6 +128,12 @@ public class MainActivity extends AppCompatActivity implements
         if(mPosition == RecyclerView.NO_POSITION)
             mPosition = 0;
         mRecyclerView.smoothScrollToPosition(mPosition);
+
+        if(data.moveToNext()) {
+            showAlarm();
+        } else {
+            showBackground();
+        }
     }
 
     @Override
@@ -157,26 +153,31 @@ public class MainActivity extends AppCompatActivity implements
 
         switch(selectedItem) {
             case R.id.action_insert:
-                Intent intent = new Intent(this, DetailActivity.class);
-                intent.setAction(DetailActivity.INSERT_ACTION);
-                intent.setData(AlarmEntry.CONTENT_URI);
-                startActivity(intent);
+                newAlarm();
 
-                return true;
-            case R.id.action_delete:
-                /*new AsyncTask<Void, Void, Void>() {
-
-                    @Override
-                    protected Void doInBackground(Void... params) {
-                        getContentResolver().delete(AlarmEntry.CONTENT_URI, null, null);
-                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-
-                        return null;
-                    }
-                }.execute();*/
                 return true;
         }
-
         return super.onOptionsItemSelected(item);
+    }
+
+    public void newAlarm() {
+        Intent intent = new Intent(this, DetailActivity.class);
+        intent.setAction(DetailActivity.NEW_ACTION);
+        intent.setData(AlarmEntry.CONTENT_URI);
+        startActivity(intent);
+    }
+
+    @Override
+    public void onClick(View v) {
+        newAlarm();
+    }
+
+    public void showAlarm() {
+        mPictureImageView.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+    }
+    public void showBackground() {
+        mRecyclerView.setVisibility(View.INVISIBLE);
+        mPictureImageView.setVisibility(View.VISIBLE);
     }
 }
