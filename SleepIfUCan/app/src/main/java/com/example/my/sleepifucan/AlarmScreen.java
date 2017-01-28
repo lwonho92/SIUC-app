@@ -18,14 +18,18 @@ import android.widget.TextView;
 
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class AlarmScreen extends AppCompatActivity {
     public static String ALARM_DESCRIPTION = "alarmDescription";
     public static String ALARM_VOLUME = "alarmVolume";
     public static String ALARM_TYPE = "alarmType";
 
-    TextView currentTextView, mDesTextView;
+    @BindView(R.id.tv_currentTime) TextView currentTextView;
+    @BindView(R.id.tv_description_screen) TextView mDesTextView;
+    @BindView(R.id.bt_alarmOff) Button alarmOffButton;
     CountDownTimer countDownTimer;
-    Button alarmOffButton;
 
     int id, mediaPlayerVolume, currentRingVolume, currentMusicVolume, type;
     MediaPlayer mediaPlayer;
@@ -39,10 +43,7 @@ public class AlarmScreen extends AppCompatActivity {
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_alarm_screen);
-
-        currentTextView = (TextView) findViewById(R.id.tv_currentTime);
-        mDesTextView = (TextView) findViewById(R.id.tv_description_screen);
-        alarmOffButton = (Button) findViewById(R.id.bt_alarmOff);
+        ButterKnife.bind(this);
 
         Bundle bundle = getIntent().getExtras();
         if(bundle != null) {
@@ -55,9 +56,12 @@ public class AlarmScreen extends AppCompatActivity {
                 mDesTextView.setText(des);
         }
 
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
         if(type == 1) {
             mUri = getIntent().getData();
-            audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
 
             mediaPlayer = MediaPlayer.create(this, mUri);
             if (mediaPlayer == null) {
@@ -78,9 +82,7 @@ public class AlarmScreen extends AppCompatActivity {
                 mediaPlayer.start();
 
         } else {
-            vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-
-            if(vibrator.hasVibrator()) {
+            if(vibrator != null && vibrator.hasVibrator()) {
                 vibrator.vibrate(new long[] {0, 3000, 1000}, 0);
             }
         }
@@ -112,6 +114,17 @@ public class AlarmScreen extends AppCompatActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        if(type == 1) {
+            if (mediaPlayer != null) {
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+        } else {
+            if(vibrator !=  null && vibrator.hasVibrator()) {
+                vibrator.cancel();
+            }
+        }
+
         Bundle bundle = intent.getExtras();
         if(bundle != null) {
             String des = bundle.getString(ALARM_DESCRIPTION);
@@ -122,13 +135,9 @@ public class AlarmScreen extends AppCompatActivity {
             else
                 mDesTextView.setText(des);
         }
-        if(type == 1) {
-            if (mediaPlayer != null) {
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
 
-            mUri = getIntent().getData();
+        if(type == 1) {
+            mUri = intent.getData();
             mediaPlayer = MediaPlayer.create(getApplicationContext(), mUri);
             if (mediaPlayer == null) {
                 mUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM);
@@ -141,8 +150,8 @@ public class AlarmScreen extends AppCompatActivity {
             if (mediaPlayer != null)
                 mediaPlayer.start();
         } else {
-            vibrator.cancel();
-
+            if(vibrator == null)
+                vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
             if(vibrator.hasVibrator()) {
                 vibrator.vibrate(new long[] {0, 3000, 1000}, 0);
             }
@@ -168,7 +177,9 @@ public class AlarmScreen extends AppCompatActivity {
                 mediaPlayer = null;
             }
         } else {
-            vibrator.cancel();
+            if(vibrator != null && vibrator.hasVibrator()) {
+                vibrator.cancel();
+            }
         }
     }
 

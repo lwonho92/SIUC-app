@@ -20,6 +20,9 @@ import com.example.my.sleepifucan.utilities.TimeUtils;
 
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * Created by MY on 2017-01-18.
  */
@@ -30,16 +33,16 @@ public class AlarmAdapter extends RecyclerView.Adapter<AlarmAdapter.AlarmAdapter
     private Cursor mCursor;
 
     class AlarmAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        private final TextView mTimeTextView, mDesTextView, mDayTextView;
+        @BindView(R.id.tv_alarm_time) TextView mTimeTextView;
+        @BindView(R.id.tv_alarm_description) TextView mDesTextView;
+        @BindView(R.id.tv_alarm_day) TextView mDayTextView;
         private final ImageView mCycleView, mSwitchView;
 
         public AlarmAdapterViewHolder(View itemView) {
             super(itemView);
+            ButterKnife.bind(this, itemView);
 
-            mTimeTextView = (TextView) itemView.findViewById(R.id.tv_alarm_time);
             mCycleView = (ImageView) itemView.findViewById(R.id.im_cycle);
-            mDesTextView = (TextView) itemView.findViewById(R.id.tv_alarm_description);
-            mDayTextView = (TextView) itemView.findViewById(R.id.tv_alarm_day);
             mSwitchView = (ImageView) itemView.findViewById(R.id.im_switch);
             mSwitchView.setOnClickListener(this);
 

@@ -33,6 +33,12 @@ import com.example.my.sleepifucan.utilities.TimePickerUtils;
 import java.lang.reflect.Method;
 import java.util.Calendar;
 
+import butterknife.BindView;
+import butterknife.BindViews;
+import butterknife.ButterKnife;
+import butterknife.OnCheckedChanged;
+import butterknife.OnClick;
+
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 10;
     public static final int PICK_FROM_FILE = 1234;
@@ -42,14 +48,14 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     private String sPath = "";
     private String action;
 
-    EditText timeEditText;
-    ToggleButton[] dayToggleButtons;
-    CheckBox repeatCheckBox;
-    Switch typeSwitch;
-    TextView pathTextView;
-    Button pathButton;
-    SeekBar volumeSeekBar;
-    EditText desEditText;
+    @BindView(R.id.et_time) public EditText timeEditText;
+    @BindViews({R.id.tb_sunday, R.id.tb_monday, R.id.tb_tuesday, R.id.tb_wednesday, R.id.tb_thursday, R.id.tb_friday, R.id.tb_saturday}) public ToggleButton[] dayToggleButtons;
+    @BindView(R.id.cb_repeat) public CheckBox repeatCheckBox;
+    @BindView (R.id.sw_type) public Switch typeSwitch;
+    @BindView(R.id.tv_path) public TextView pathTextView;
+    @BindView(R.id.bt_path) public Button pathButton;
+    @BindView(R.id.sb_volume) public SeekBar volumeSeekBar;
+    @BindView(R.id.et_description) public EditText desEditText;
 
     public static final int INDEX_ID = 0;
     public static final int INDEX_CLOCK = 1;
@@ -66,18 +72,10 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
-
-        timeEditText = (EditText) findViewById(R.id.et_time);
         dayToggleButtons = new ToggleButton[7];
-        dayToggleButtons[0] = (ToggleButton) findViewById(R.id.tb_sunday);
-        dayToggleButtons[1] = (ToggleButton) findViewById(R.id.tb_monday);
-        dayToggleButtons[2] = (ToggleButton) findViewById(R.id.tb_tuesday);
-        dayToggleButtons[3] = (ToggleButton) findViewById(R.id.tb_wednesday);
-        dayToggleButtons[4] = (ToggleButton) findViewById(R.id.tb_thursday);
-        dayToggleButtons[5] = (ToggleButton) findViewById(R.id.tb_friday);
-        dayToggleButtons[6] = (ToggleButton) findViewById(R.id.tb_saturday);
-        repeatCheckBox = (CheckBox) findViewById(R.id.cb_repeat);
-        typeSwitch = (Switch) findViewById(R.id.sw_type);
+        ButterKnife.bind(this);
+
+
         typeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -88,8 +86,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 }
             }
         });
-        pathTextView = (TextView) findViewById(R.id.tv_path);
-        pathButton = (Button) findViewById(R.id.bt_path);
+
         pathButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -102,8 +99,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 startActivityForResult(intent, PICK_FROM_FILE);
             }
         });
-        volumeSeekBar = (SeekBar) findViewById(R.id.sb_volume);
-        desEditText = (EditText) findViewById(R.id.et_description);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             timeEditText.setShowSoftInputOnFocus(false);

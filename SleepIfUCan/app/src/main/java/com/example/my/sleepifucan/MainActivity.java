@@ -21,13 +21,16 @@ import com.example.my.sleepifucan.alarm.AlarmIntentService;
 import com.example.my.sleepifucan.alarm.InitReceiver;
 import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements
-        AlarmAdapter.AlarmAdapterOnClickHandler,
-        LoaderManager.LoaderCallbacks<Cursor>,
-View.OnClickListener {
-    private RecyclerView mRecyclerView;
+                                            AlarmAdapter.AlarmAdapterOnClickHandler,
+                                            LoaderManager.LoaderCallbacks<Cursor>,
+                                            View.OnClickListener {
+    @BindView(R.id.recyclerview_alarm) public RecyclerView mRecyclerView;
+    @BindView(R.id.iv_picture) public ImageView mPictureImageView;
     private AlarmAdapter mAlarmAdapter;
-    private ImageView mPictureImageView;
 
     private int mPosition = RecyclerView.NO_POSITION;
 
@@ -56,11 +59,9 @@ View.OnClickListener {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recyclerview_alarm);
-        mPictureImageView = (ImageView) findViewById(R.id.iv_picture);
-
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
         mRecyclerView.setLayoutManager(linearLayoutManager);
         mRecyclerView.setHasFixedSize(true);
         mAlarmAdapter = new AlarmAdapter(this, this);

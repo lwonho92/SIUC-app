@@ -34,4 +34,8 @@ dependencies {
 
 //    FAB dependencies
     compile 'com.android.support:design:25.0.1'
+
+//    ButterKnife dependencies
+    compile 'com.jakewharton:butterknife:8.5.1'
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
 }
