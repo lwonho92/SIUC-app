@@ -104,9 +104,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="기본 알람음"
+        android:textSize="24sp"
         />
     <Button
         android:id="@+id/bt_path"
+        android:theme="@style/AppTheme.Button"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="알람음 선택"

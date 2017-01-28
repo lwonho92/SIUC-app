@@ -65,7 +65,6 @@ public class AlarmIntentService extends IntentService {
                 if(TimeUtils.isSettedDay(days, today)) {
                     Intent screenIntent = new Intent(this, AlarmScreen.class);
                     Bundle bundle = new Bundle();
-//                    bundle.putSerializable(AlarmScreen.ALARM_ID, id);
                     String des = mCursor.getString(mCursor.getColumnIndex(AlarmEntry.COLUMN_DESCRIPTION));
                     bundle.putSerializable(AlarmScreen.ALARM_DESCRIPTION, des);
                     int volume = mCursor.getInt(mCursor.getColumnIndex(AlarmEntry.COLUMN_VOLUME));

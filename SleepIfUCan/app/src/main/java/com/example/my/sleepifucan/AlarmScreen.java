@@ -67,8 +67,22 @@ public class AlarmScreen extends AppCompatActivity {
             mediaPlayer.setLooping(true);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setVolume(mediaPlayerVolume / 100.0f, mediaPlayerVolume / 100.0f);
+
+            currentRingVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
+            currentMusicVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
+            audioManager.setStreamVolume(AudioManager.STREAM_RING, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
+            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
+
+            if (mediaPlayer != null)
+                mediaPlayer.start();
+
         } else {
             vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+
+            if(vibrator.hasVibrator()) {
+                vibrator.vibrate(new long[] {0, 3000, 1000}, 0);
+            }
         }
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
                             | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
@@ -80,7 +94,7 @@ public class AlarmScreen extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        countDownTimer = new CountDownTimer(10000, 1000) {
+        countDownTimer = new CountDownTimer(300000, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 Calendar calendar = Calendar.getInstance();
@@ -92,7 +106,7 @@ public class AlarmScreen extends AppCompatActivity {
             }
         };
 
-        soundActive();
+        countDownTimer.start();
     }
 
     @Override
@@ -109,6 +123,11 @@ public class AlarmScreen extends AppCompatActivity {
                 mDesTextView.setText(des);
         }
         if(type == 1) {
+            if (mediaPlayer != null) {
+                mediaPlayer.release();
+                mediaPlayer = null;
+            }
+
             mUri = getIntent().getData();
             mediaPlayer = MediaPlayer.create(getApplicationContext(), mUri);
             if (mediaPlayer == null) {
@@ -118,49 +137,42 @@ public class AlarmScreen extends AppCompatActivity {
             mediaPlayer.setLooping(true);
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setVolume(mediaPlayerVolume / 100.0f, mediaPlayerVolume / 100.0f);
-        }
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        soundInactive();
-    }
-
-    public void clickedAlarmOff(View view) {
-        finish();
-    }
-
-    public void soundActive() {
-        countDownTimer.start();
-
-        if(type == 1) {
-//            currentRingVolume = audioManager.getStreamVolume(AudioManager.STREAM_RING);
-            currentMusicVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-//            audioManager.setStreamVolume(AudioManager.STREAM_RING, audioManager.getStreamMaxVolume(AudioManager.STREAM_RING), 0);
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0);
 
             if (mediaPlayer != null)
                 mediaPlayer.start();
         } else {
+            vibrator.cancel();
+
             if(vibrator.hasVibrator()) {
                 vibrator.vibrate(new long[] {0, 3000, 1000}, 0);
             }
         }
     }
 
-    public void soundInactive() {
+    @Override
+    protected void onPause() {
+        super.onPause();
         countDownTimer.cancel();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
         if(type == 1) {
-            audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentMusicVolume, 0);
-//            audioManager.setStreamVolume(AudioManager.STREAM_RING, currentRingVolume, 0);
             if (mediaPlayer != null) {
+                audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, currentMusicVolume, 0);
+                audioManager.setStreamVolume(AudioManager.STREAM_RING, currentRingVolume, 0);
+
                 mediaPlayer.release();
                 mediaPlayer = null;
             }
         } else {
             vibrator.cancel();
         }
+    }
+
+    public void clickedAlarmOff(View view) {
+        finish();
     }
 }
