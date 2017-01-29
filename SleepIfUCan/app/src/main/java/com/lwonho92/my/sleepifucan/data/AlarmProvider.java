@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan.data;
+package com.lwonho92.my.sleepifucan.data;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -10,7 +10,7 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 /**
  * Created by MY on 2017-01-18.

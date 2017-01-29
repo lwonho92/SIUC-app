@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan.alarm;
+package com.lwonho92.my.sleepifucan.alarm;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -7,9 +7,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 
-import com.example.my.sleepifucan.MainActivity;
-import com.example.my.sleepifucan.utilities.TimeUtils;
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.MainActivity;
+import com.lwonho92.my.sleepifucan.utilities.TimeUtils;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 import java.util.Calendar;
 

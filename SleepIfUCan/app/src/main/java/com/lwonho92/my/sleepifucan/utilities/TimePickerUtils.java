@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan.utilities;
+package com.lwonho92.my.sleepifucan.utilities;
 
 import android.app.Dialog;
 import android.app.TimePickerDialog;
@@ -10,7 +10,7 @@ import android.util.Log;
 import android.widget.EditText;
 import android.widget.TimePicker;
 
-import com.example.my.sleepifucan.R;
+import com.lwonho92.my.sleepifucan.R;
 
 import java.util.Calendar;
 

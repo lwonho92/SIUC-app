@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.my.sleepifucan">
+    package="com.lwonho92.my.sleepifucan">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="com.lwonho92.my.sleepifucan.MainActivity"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,34 +23,34 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".DetailActivity"
+            android:name="com.lwonho92.my.sleepifucan.DetailActivity"
             android:label="Alarm&apos;s Setting"
-            android:parentActivityName=".MainActivity"
+            android:parentActivityName="com.lwonho92.my.sleepifucan.MainActivity"
             android:windowSoftInputMode="stateHidden|adjustResize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
+                android:value="com.lwonho92.my.sleepifucan.MainActivity" />
         </activity>
         <activity
-            android:name=".AlarmScreen"
+            android:name="com.lwonho92.my.sleepifucan.AlarmScreen"
             android:theme="@style/noTitleAppTheme"
             android:launchMode="singleTop">
         </activity>
 
         <provider
-            android:name=".data.AlarmProvider"
+            android:name="com.lwonho92.my.sleepifucan.data.AlarmProvider"
             android:authorities="@string/content_authority"
             android:exported="true" />
 
-        <receiver android:name=".alarm.InitReceiver">
+        <receiver android:name="com.lwonho92.my.sleepifucan.alarm.InitReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="com.example.my.sleepifucan.alarm.INIT_RECEIVER" />
+                <action android:name="com.lwonho92.my.sleepifucan.alarm.INIT_RECEIVER" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name=".alarm.AlarmIntentService"
+            android:name="com.lwonho92.my.sleepifucan.alarm.AlarmIntentService"
             />
     </application>
 

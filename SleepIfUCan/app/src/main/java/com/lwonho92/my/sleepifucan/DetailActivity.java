@@ -1,11 +1,10 @@
-package com.example.my.sleepifucan;
+package com.lwonho92.my.sleepifucan;
 
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Build;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
@@ -24,15 +23,13 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
-import com.example.my.sleepifucan.alarm.AlarmIntentService;
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
-import com.example.my.sleepifucan.utilities.TimeUtils;
-import com.example.my.sleepifucan.utilities.TimePickerUtils;
+import com.lwonho92.my.sleepifucan.alarm.AlarmIntentService;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.utilities.TimeUtils;
+import com.lwonho92.my.sleepifucan.utilities.TimePickerUtils;
 
-import java.lang.reflect.Method;
 import java.util.Calendar;
 
 import butterknife.BindView;

@@ -1,10 +1,10 @@
-package com.example.my.sleepifucan.data;
+package com.lwonho92.my.sleepifucan.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 /**
  * Created by MY on 2017-01-18.

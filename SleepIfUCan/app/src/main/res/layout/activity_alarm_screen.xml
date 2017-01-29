@@ -9,7 +9,7 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:background="@color/colorBlack"
-    tools:context="com.example.my.sleepifucan.AlarmScreen">
+    tools:context="com.lwonho92.my.sleepifucan.AlarmScreen">
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

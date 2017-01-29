@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan.data;
+package com.lwonho92.my.sleepifucan.data;
 
 import android.net.Uri;
 import android.provider.BaseColumns;
@@ -8,7 +8,7 @@ import android.provider.BaseColumns;
  */
 
 public class AlarmContract {
-    public static final String CONTENT_AUTHORITY = "com.example.my.sleepifucan";
+    public static final String CONTENT_AUTHORITY = "com.lwonho92.my.sleepifucan";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
     public static final String PATH_ALARM = "alarm";
 

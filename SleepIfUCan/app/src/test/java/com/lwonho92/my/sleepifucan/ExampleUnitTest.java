@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan;
+package com.lwonho92.my.sleepifucan;
 
 import org.junit.Test;
 

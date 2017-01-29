@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan;
+package com.lwonho92.my.sleepifucan;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -17,9 +17,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.example.my.sleepifucan.alarm.AlarmIntentService;
-import com.example.my.sleepifucan.alarm.InitReceiver;
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.alarm.AlarmIntentService;
+import com.lwonho92.my.sleepifucan.alarm.InitReceiver;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements
     private int mPosition = RecyclerView.NO_POSITION;
 
     private static final int LOADER_ID = 0;
-    private static final String INTENT_ACTION = "com.example.my.sleepifucan.alarm.INIT_RECEIVER";
+    private static final String INTENT_ACTION = "com.lwonho92.my.sleepifucan.alarm.INIT_RECEIVER";
 
     public static final String[] DESIRED_COLUMNS = {
             AlarmEntry._ID,

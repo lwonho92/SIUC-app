@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Sleep If U Can</string>
 
-    <string name="content_authority">com.example.my.sleepifucan;</string>
+    <string name="content_authority">com.lwonho92.my.sleepifucan;</string>
 
     <string name="default_time">00:00</string>
 

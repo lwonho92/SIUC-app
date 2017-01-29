@@ -1,4 +1,4 @@
-package com.example.my.sleepifucan.alarm;
+package com.lwonho92.my.sleepifucan.alarm;
 
 import android.app.AlarmManager;
 import android.app.IntentService;
@@ -13,9 +13,9 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.util.Log;
 
-import com.example.my.sleepifucan.AlarmScreen;
-import com.example.my.sleepifucan.utilities.TimeUtils;
-import com.example.my.sleepifucan.data.AlarmContract.AlarmEntry;
+import com.lwonho92.my.sleepifucan.AlarmScreen;
+import com.lwonho92.my.sleepifucan.utilities.TimeUtils;
+import com.lwonho92.my.sleepifucan.data.AlarmContract.AlarmEntry;
 
 import java.util.Calendar;
 
