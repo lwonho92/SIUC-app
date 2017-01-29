@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -23,6 +24,7 @@ import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.ToggleButton;
 
 import com.example.my.sleepifucan.alarm.AlarmIntentService;
@@ -36,8 +38,6 @@ import java.util.Calendar;
 import butterknife.BindView;
 import butterknife.BindViews;
 import butterknife.ButterKnife;
-import butterknife.OnCheckedChanged;
-import butterknife.OnClick;
 
 public class DetailActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     private static final int LOADER_ID = 10;
@@ -71,6 +71,8 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         setContentView(R.layout.activity_detail);
         dayToggleButtons = new ToggleButton[7];
         ButterKnife.bind(this);
@@ -99,20 +101,6 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
                 startActivityForResult(intent, PICK_FROM_FILE);
             }
         });
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            timeEditText.setShowSoftInputOnFocus(false);
-        } else {
-            try {
-                final Method method = EditText.class.getMethod(
-                        "setShowSoftInputOnFocus"
-                        , new Class[]{boolean.class});
-                method.setAccessible(true);
-                method.invoke(timeEditText, false);
-            } catch (Exception e) {
-                e.getStackTrace();
-            }
-        }
 
         Intent intent = getIntent();
         action = intent.getAction();
@@ -225,7 +213,7 @@ public class DetailActivity extends AppCompatActivity implements LoaderManager.L
     }
 
     public void showTimePickerDialog(View v) {
-        DialogFragment dialogFragment = new TimePickerUtils((EditText) v);
+        DialogFragment dialogFragment = new TimePickerUtils();
         dialogFragment.show(getSupportFragmentManager(), "TimePicker");
     }
 
